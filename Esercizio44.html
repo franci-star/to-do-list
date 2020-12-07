@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <link rel="stylesheet" type="text/css" href="style.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"
+        integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    </head>
+
+    <body>
+        <div id="todolist" class="container">
+        <div id="todolistbody">
+        </div>
+        <div id="contenitoreinputtodolist" class="input-group mb-3">
+            <input id="inputtodolist" type="text" class="form-control" placeholder="TO DO..." aria-label="inputtodolist" aria-describedby="basic-addon2">
+            <div class="input-group-append">
+              <button id="btnaggiungi" class="btn btn-outline-secondary" type="button" onclick="aggiungi()">AGGIUNGI</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="modalexmdf" class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">MODIFICARE IL TASK INSERITO?</h5>
+                  </button>
+                </div>
+                <div class="modal-body">
+                    <input id="testonuovo" type="text" class="form-control nuovoinput" placeholder="TO DO..." aria-label="inputtodolist" aria-describedby="basic-addon2">
+                </div>
+                <div class="modal-footer">
+                  <button id="btnsalva" type="button" class="btn btn-primary" onclick="salva()">S&#204;<br>SALVA</button>
+                  <button id="btnannulla" type="button" class="btn btn-secondary" data-dismiss="modal">NO<br>ANNULLA</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        <script>
+            
+            var vtodolist=document.getElementById("todolist");
+            var vtodolistbody=document.getElementById("todolistbody")
+            var vinputtodolist=document.getElementById("inputtodolist");
+            var vbtnaggiungi=document.getElementById("btnaggiungi");
+            var arrayinput=[];
+            var contatore=0;
+            var img1=`<div id="img1" class="pointer" onclick="modifica(event)">
+                <svg id="pencil" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	            viewBox="0 0 407.7 407.7" style="enable-background:new 0 0 407.7 407.7;" xml:space="preserve">
+                <path d="M377.724,18.353c-19.269-15.87-47.398-24.851-69.608-12.74c-0.833,0.139-1.68,0.456-2.522,1.076 C254.11,44.715,207.559,90.355,160.77,133.945c-46.454,43.277-96.865,85.898-135.266,136.658c-1.493,1.974-0.767,4.451,0.822,6.092 C15.316,313.821,4,356.141,1.91,395.026c-1.023,1.149-1.684,2.572-1.525,4.211c0.056,0.576,0.112,1.15,0.168,1.726 c0.085,0.871,0.448,1.719,0.925,2.503c-0.003,0.113-0.017,0.232-0.018,0.345c-0.074,4.544,5.01,4.915,7.356,2.099 c15.756,0.075,35.582-9.928,49.64-14.273c26.186-8.094,52.387-16.137,78.548-24.305c1.358-0.425,2.417-1.098,3.333-1.867 c1.472,0.094,3.047-0.414,4.492-1.777c87.486-82.649,172.08-172.002,251.981-261.996c1.465-1.649,2.005-3.435,2.119-5.183 c0.875-0.461,1.686-1.058,2.271-1.932C417.813,69.793,397.575,34.701,377.724,18.353z M165.125,153.3 c47.965-45.203,99.599-87.233,146.036-133.935c5.71,4.895,11.32,9.91,16.951,14.9C244.736,112.184,153.337,193,87.238,285.589 c-2.438-6.941-8.133-13.856-12.775-17.336c-6.616-4.96-14.727-7.165-22.719-6.764C91.46,227.786,127.31,188.937,165.125,153.3z M126.289,351.875c-21.427,6.9-42.997,13.645-64.436,20.735c-7.333-12.932-18.698-25.272-34.538-25.157 c5.655-24.178,9.967-48.913,13.678-71.834c9.057-2.81,18.836-2.168,25.997,5.02c5.088,5.107,5.002,14.223,10.106,18.632 c-0.241,3.084,2.592,6.284,6.398,5.609c7.179-1.276,15.554,0.364,18.884,7.703c3.294,7.262-2.95,13.728,0.579,20.423 c0.911,1.727,3.245,3.207,5.244,3.007c0.277-0.028,0.554-0.055,0.831-0.085c1.041-0.104,2.169-0.38,3.222-0.814 c6.601,1.43,14.089,3.357,17.413,9.452c0.72,1.321,0.981,2.764,1.237,4.196C129.096,349.178,127.353,350.31,126.289,351.875z M384.834,89.716C302.349,171.012,220.865,256.7,145.327,344.72c-1.792-11.094-12.079-16.669-22.792-19.361 c82.395-83.298,166.722-167.277,245.149-254.419c6.264,6.34,12.76,12.498,19.868,16.999 C386.624,88.31,385.708,88.856,384.834,89.716z"/>
+                <g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g>
+                </svg>
+                </div>`;
+                var img2=`<div id="img2" class="pointer" onclick="cancella(event)">
+                <svg id="trashbin" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	            viewBox="0 0 486.4 486.4" style="enable-background:new 0 0 486.4 486.4;" xml:space="preserve">
+                <g><g>
+		        <path d="M446,70H344.8V53.5c0-29.5-24-53.5-53.5-53.5h-96.2c-29.5,0-53.5,24-53.5,53.5V70H40.4c-7.5,0-13.5,6-13.5,13.5
+                S32.9,97,40.4,97h24.4v317.2c0,39.8,32.4,72.2,72.2,72.2h212.4c39.8,0,72.2-32.4,72.2-72.2V97H446c7.5,0,13.5-6,13.5-13.5
+                S453.5,70,446,70z M168.6,53.5c0-14.6,11.9-26.5,26.5-26.5h96.2c14.6,0,26.5,11.9,26.5,26.5V70H168.6V53.5z M394.6,414.2
+                c0,24.9-20.3,45.2-45.2,45.2H137c-24.9,0-45.2-20.3-45.2-45.2V97h302.9v317.2H394.6z"/>
+		        <path d="M243.2,411c7.5,0,13.5-6,13.5-13.5V158.9c0-7.5-6-13.5-13.5-13.5s-13.5,6-13.5,13.5v238.5
+			    C229.7,404.9,235.7,411,243.2,411z"/>
+		        <path d="M155.1,396.1c7.5,0,13.5-6,13.5-13.5V173.7c0-7.5-6-13.5-13.5-13.5s-13.5,6-13.5,13.5v208.9
+			    C141.6,390.1,147.7,396.1,155.1,396.1z"/>
+		        <path d="M331.3,396.1c7.5,0,13.5-6,13.5-13.5V173.7c0-7.5-6-13.5-13.5-13.5s-13.5,6-13.5,13.5v208.9
+			    C317.8,390.1,323.8,396.1,331.3,396.1z"/>
+	            </g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g>
+                </svg>
+                </div>`;
+            var idgenitore1;
+            var idgenitore2;
+            var vtestonuovo=document.getElementById("testonuovo");
+
+            const cassettoiniziale=JSON.parse(window.localStorage.getItem("cassetto"));
+            if (cassettoiniziale) {
+                for (var i=0; i<cassettoiniziale.length; i++) {
+                    arrayinput.push(cassettoiniziale[i]);
+                }
+                var idultimoelemento=arrayinput[arrayinput.length-1].idunivoco;
+                contatore=idultimoelemento+1;
+                popolabody();
+            }
+
+            function aggiornalocalstorage() {
+                window.localStorage.setItem("cassetto", JSON.stringify(arrayinput));
+            }
+
+            function aggiungi() {
+                var valvinputtodolist=vinputtodolist.value;
+                if (valvinputtodolist !== "") {
+                var contenitoretask=document.createElement("div");
+                contenitoretask.setAttribute("class", "riga");
+                contenitoretask.setAttribute("id", contatore+1);
+                var contenitoretesto=document.createElement("div");
+                contenitoretesto.setAttribute("onclick", "fatto()");
+                contenitoretesto.setAttribute("class", "pointer");
+                var contenitoreimmagini=document.createElement("div");
+                contenitoreimmagini.style.display="flex";
+                contenitoreimmagini.innerHTML=img1+img2;
+                contenitoretesto.innerHTML=valvinputtodolist;
+                contenitoretask.appendChild(contenitoretesto);
+                contenitoretask.appendChild(contenitoreimmagini);
+                vtodolistbody.appendChild(contenitoretask);
+                
+                
+                var oggetti={};
+                oggetti["idunivoco"]=contatore+1;
+                for (idunivoco in oggetti) {
+                     contatore=contatore+1;
+                }
+                oggetti["nometask"]=vinputtodolist.value;
+                oggetti["fatto"]=false;
+                arrayinput.push(oggetti);
+                aggiornalocalstorage();
+                vinputtodolist.value="";
+                }
+            }
+
+            function fatto() {
+                var contenitoretestofatto=event.target.parentElement;
+                var idgenitore3=event.target.parentElement.getAttribute("id");
+                arrayinput.find(z=> {
+                    if (z.idunivoco==idgenitore3) {
+                        z.fatto=!z.fatto;
+                    }
+                });
+                    if (contenitoretestofatto.classList.contains("fatto")) {
+                        contenitoretestofatto.classList.remove("fatto");
+                    } else {
+                        contenitoretestofatto.classList.add("fatto");
+                    }
+                    aggiornalocalstorage();
+            }
+            
+            function salva() {
+                var testomodificato=vtestonuovo.value;
+                var trovaid=arrayinput.find(y=> {
+                    if (y.idunivoco==idgenitore2) {
+                        y.nometask=testomodificato;
+                        return y;
+                    }
+                });
+                if (trovaid) {
+                vtodolistbody.innerHTML="";
+                popolabody();
+                }
+                $("#modalexmdf").modal("toggle");
+                aggiornalocalstorage();
+            }
+
+            function modifica(event) {
+                var genitore2=event.target.parentElement.parentElement;
+                idgenitore2=genitore2.getAttribute("id");
+                var taskfiltrato=arrayinput.filter(x=> {
+                    if (idgenitore2 == x.idunivoco) {
+                        return x;
+                    }
+                });
+                vtestonuovo.value=taskfiltrato[0].nometask;
+                $("#modalexmdf").modal();
+                aggiornalocalstorage();
+            }
+
+            
+
+            function popolabody() {
+                for (var i=0; i<arrayinput.length; i++) {
+                    var contenitoretask=document.createElement("div");
+                    contenitoretask.setAttribute("class", "riga");
+                    contenitoretask.setAttribute("id", arrayinput[i].idunivoco);
+                    var contenitoretesto=document.createElement("div");
+                    contenitoretesto.setAttribute("onclick", "fatto()");
+                    contenitoretesto.setAttribute("class", "pointer");
+                    if (arrayinput[i].fatto==true) {
+                        contenitoretask.classList.add("fatto");
+                    }
+                    var contenitoreimmagini=document.createElement("div");
+                    contenitoreimmagini.style.display="flex";
+                    contenitoreimmagini.innerHTML=img1+img2;
+                    contenitoretesto.innerHTML=arrayinput[i].nometask;
+                    contenitoretask.appendChild(contenitoretesto);
+                    contenitoretask.appendChild(contenitoreimmagini);
+                    vtodolistbody.appendChild(contenitoretask);
+                }
+            }
+
+            function cancella(event) { 
+                var genitore1=event.target.parentElement.parentElement;
+                var idgenitore1=genitore1.getAttribute("id");
+                    $.each(arrayinput, function(i){
+                        if(arrayinput[i].idunivoco == idgenitore1) {
+                            arrayinput.splice(i, 1);
+                            return false;
+                        }
+                    });
+                vtodolistbody.innerHTML="";
+                aggiornalocalstorage();
+                popolabody();
+            }
+        </script>
+
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+        integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+        crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js"
+        integrity="sha384-w1Q4orYjBQndcko6MimVbzY0tgp4pWB4lZ7lr30WKz0vr/aWKhXdBNmNb5D92v7s"
+        crossorigin="anonymous"></script>
+
+    </body>
+
+</html>
+
+<!-- ctrl+f -->
